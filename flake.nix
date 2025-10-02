@@ -2,7 +2,10 @@
   # Declare external dependencies that this flake relies on.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    darwin.url  = "github:LnL7/nix-darwin";
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -49,7 +52,7 @@
               withPython3 = true;
             };
             # Extra CLI tools to install for the user.
-            home.packages = with pkgs; [ ripgrep fd unzip tree-sitter ];
+            home.packages = with pkgs; [ ripgrep fd unzip tree-sitter rustup ];
           };
         }
       ];
