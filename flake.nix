@@ -75,55 +75,100 @@
 
             # === Program Configurations ===
 
-            # Zsh shell - enables home-manager shell integration
+            # Zsh shell - using oh-my-zsh framework via nix
             programs.zsh = {
               enable = true;
-              # Source existing antigen configuration to preserve plugins and theme
-              initExtra = ''
-                # Enable Powerlevel10k instant prompt
-                if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-                  source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-                fi
 
-                source ~/antigen.zsh
+              # Enable oh-my-zsh through home-manager (no Antigen needed!)
+              oh-my-zsh = {
+                enable = true;
+                plugins = [
+                  "git"                  # Git aliases and functions
+                  "pip"                  # Python pip completion
+                  "command-not-found"    # Suggests package installation for missing commands
+                  "vagrant"              # Vagrant completion
+                  "mvn"                  # Maven completion
+                  "docker"               # Docker completion and aliases
+                  "docker-compose"       # Docker Compose completion
+                  "tmux"                 # Tmux aliases and functions
+                  "autojump"             # Quick directory jumping
+                  "vi-mode"              # Vi keybindings for command line
+                ];
+                # Custom plugins will be loaded via plugins below
+              };
 
-                # Load the oh-my-zsh's library
-                antigen use oh-my-zsh
+              # Additional Zsh plugins managed by Nix
+              plugins = [
+                {
+                  name = "powerlevel10k";
+                  src = pkgs.zsh-powerlevel10k;
+                  file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+                }
+                {
+                  name = "zsh-syntax-highlighting";
+                  src = pkgs.zsh-syntax-highlighting;
+                  file = "share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
+                }
+                {
+                  name = "zsh-autosuggestions";
+                  src = pkgs.zsh-autosuggestions;
+                  file = "share/zsh-autosuggestions/zsh-autosuggestions.zsh";
+                }
+              ];
 
-                # Theme must come before plugins
-                antigen theme romkatv/powerlevel10k
+              # Shell aliases
+              shellAliases = {
+                vim = "nvim";
+                vi = "nvim";
+                ls = "ls --color=auto";
+                ll = "ls -lah";
+                grep = "grep --color=auto";
+                # tmux aliases
+                ta = "tmux attach -t";
+                ts = "tmux new-session -s";
+                tl = "tmux list-sessions";
+                # Git aliases (in addition to oh-my-zsh git plugin)
+                gst = "git status";
+                gco = "git checkout";
+                gcm = "git commit -m";
+              };
 
-                # Bundles from the default repo
-                antigen bundle git
-                antigen bundle pip
-                antigen bundle command-not-found
-                antigen bundle vagrant
-                antigen bundle mvn
-                antigen bundle autojump
+              # Zsh initialization content with proper ordering
+              initContent = pkgs.lib.mkMerge [
+                # Powerlevel10k instant prompt - runs BEFORE oh-my-zsh
+                (pkgs.lib.mkBefore ''
+                  # Enable Powerlevel10k instant prompt (runs early)
+                  if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+                    source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+                  fi
+                '')
 
-                # Syntax highlighting bundle
-                antigen bundle zsh-users/zsh-syntax-highlighting
-                antigen bundle zsh-users/zsh-autosuggestions
-                antigen bundle Tarrasch/zsh-autoenv
+                # Main configuration that runs AFTER oh-my-zsh
+                ''
+                  # Source Powerlevel10k configuration
+                  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-                # Tell antigen that you're done
-                antigen apply
+                  # Homebrew environment (will be phased out as you migrate to Nix)
+                  eval "$(/opt/homebrew/bin/brew shellenv)"
 
-                # Source local customizations if they exist
-                [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+                  # LM Studio CLI
+                  export PATH="$PATH:/Users/piotrkostecki/.lmstudio/bin"
 
-                # Homebrew environment (will be phased out as you migrate to Nix)
-                eval "$(/opt/homebrew/bin/brew shellenv)"
+                  # Enhanced history search with fzf
+                  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+                  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-                # LM Studio CLI
-                export PATH="$PATH:/Users/piotrkostecki/.lmstudio/bin"
+                  # Syntax highlighting customization
+                  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 
-                # Aliases
-                alias vim="nvim"
+                  # Autosuggestions configuration
+                  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+                  ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
-                # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-                [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-              '';
+                  # Source local customizations if they exist
+                  [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+                ''
+              ];
             };
 
             # Neovim text editor
@@ -148,6 +193,117 @@
               enableZshIntegration = true;  # Auto-hook into zsh
             };
 
+            # tmux - terminal multiplexer with screen-style keybindings
+            programs.tmux = {
+              enable = true;
+              # Use Ctrl-a instead of Ctrl-b (screen-style)
+              prefix = "C-a";
+              # Enable mouse support
+              mouse = true;
+              # Use 256 color terminal
+              terminal = "screen-256color";
+              # Start window numbering at 1 instead of 0
+              baseIndex = 1;
+              # Renumber windows when one is closed
+              escapeTime = 0;
+              historyLimit = 50000;
+
+              plugins = with pkgs.tmuxPlugins; [
+                # Catppuccin theme - beautiful, soothing pastel theme
+                {
+                  plugin = catppuccin;
+                  extraConfig = ''
+                    set -g @catppuccin_flavour 'mocha' # or frappe, macchiato, latte
+                    set -g @catppuccin_window_left_separator ""
+                    set -g @catppuccin_window_right_separator " "
+                    set -g @catppuccin_window_middle_separator " █"
+                    set -g @catppuccin_window_number_position "right"
+                    set -g @catppuccin_window_default_fill "number"
+                    set -g @catppuccin_window_default_text "#W"
+                    set -g @catppuccin_window_current_fill "number"
+                    set -g @catppuccin_window_current_text "#W"
+                    set -g @catppuccin_status_modules_right "directory session"
+                    set -g @catppuccin_status_left_separator  " "
+                    set -g @catppuccin_status_right_separator ""
+                    set -g @catppuccin_status_fill "icon"
+                    set -g @catppuccin_status_connect_separator "no"
+                    set -g @catppuccin_directory_text "#{pane_current_path}"
+                  '';
+                }
+                # Better tmux-vim navigation
+                vim-tmux-navigator
+                # Save and restore tmux sessions
+                resurrect
+                # Automatic session saving
+                continuum
+                # Sensible defaults
+                sensible
+              ];
+
+              extraConfig = ''
+                # === Screen-style Keybindings ===
+
+                # Send prefix to nested tmux/screen (press Ctrl-a twice)
+                bind C-a send-prefix
+
+                # Screen-style window splitting
+                bind | split-window -h -c "#{pane_current_path}"  # Vertical split
+                bind - split-window -v -c "#{pane_current_path}"  # Horizontal split
+
+                # Screen-style window creation
+                bind c new-window -c "#{pane_current_path}"
+
+                # Screen-style last window (Ctrl-a Ctrl-a)
+                bind C-a last-window
+
+                # Screen-style window navigation
+                bind Space next-window
+                bind BSpace previous-window
+
+                # Screen-style detach
+                bind d detach-client
+
+                # Screen-style kill window
+                bind k confirm-before -p "kill-window #W? (y/n)" kill-window
+
+                # Pane navigation (vim-style)
+                bind h select-pane -L
+                bind j select-pane -D
+                bind k select-pane -U
+                bind l select-pane -R
+
+                # Pane resizing
+                bind -r H resize-pane -L 5
+                bind -r J resize-pane -D 5
+                bind -r K resize-pane -U 5
+                bind -r L resize-pane -R 5
+
+                # Reload config
+                bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
+
+                # Enable vi mode in copy mode
+                setw -g mode-keys vi
+
+                # Vi-style copy-paste
+                bind -T copy-mode-vi v send-keys -X begin-selection
+                bind -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
+                # Better status bar update interval
+                set -g status-interval 5
+
+                # Enable focus events for vim
+                set -g focus-events on
+
+                # Enable RGB color support
+                set -ga terminal-overrides ",*256col*:Tc"
+
+                # === Continuum & Resurrect Settings ===
+                set -g @resurrect-strategy-nvim 'session'
+                set -g @continuum-restore 'on'
+                set -g @continuum-save-interval '15'
+              '';
+            };
+
             # === User Packages ===
             # Command-line tools and utilities installed for this user
             home.packages = with pkgs; [
@@ -166,8 +322,14 @@
               # Batch 2 - Essential dev tools
               git          # Version control system
               gh           # GitHub CLI
-              tmux         # Terminal multiplexer
               jq           # JSON processor
+
+              # Batch 3 - Development tools and utilities
+              nodejs       # JavaScript runtime
+              cmake        # Build system generator
+              yq-go        # YAML processor (Go implementation)
+              git-lfs      # Git Large File Storage
+              docker       # Container platform (includes completions)
             ];
           };
         }
