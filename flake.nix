@@ -241,6 +241,12 @@
               ];
 
               extraConfig = ''
+                # === Shell Configuration ===
+                # Force zsh as the default shell for tmux
+                set-option -g default-shell ${pkgs.zsh}/bin/zsh
+                # Start zsh as a login shell to properly load PATH
+                set-option -g default-command "${pkgs.zsh}/bin/zsh -l"
+
                 # === Screen-style Keybindings ===
 
                 # Send prefix to nested tmux/screen (press Ctrl-a twice)
@@ -330,6 +336,17 @@
               yq-go        # YAML processor (Go implementation)
               git-lfs      # Git Large File Storage
               docker       # Container platform (includes completions)
+
+              # Batch 4 - AI/ML tools (migrated from Homebrew)
+              ollama       # Local LLM runtime
+              llama-cpp    # LLM inference in C++
+
+              # Batch 5 - Python and dev utilities
+              python313    # Python 3.13
+              autojump     # Smart directory jumping
+              git-filter-repo  # Git history rewriting tool
+              zsh-completions  # Additional zsh completions
+              codex        # Haskell documentation tool
             ];
           };
         }
