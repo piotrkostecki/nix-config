@@ -117,7 +117,7 @@
           home-manager.useUserPackages = true;
 
           # User-specific configuration
-          home-manager.users.piotrkostecki = { pkgs, ... }: {
+          home-manager.users.piotrkostecki = { pkgs, lib, ... }: {
             # Home Manager state version - keep aligned with release
             home.stateVersion = "25.05";
 
@@ -126,6 +126,25 @@
 
             # Allow unfree packages (Spotify, VSCode, etc.)
             nixpkgs.config.allowUnfree = true;
+
+            # === macOS Application Linking ===
+            # Automatically create symlinks for Nix-installed GUI apps
+            # Apps will be linked to ~/Applications/Home Manager Apps/
+            targets.darwin.linkApps.enable = true;
+
+            # Register Nix apps with macOS Launch Services for Spotlight/Launchpad
+            home.activation.registerApps = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              # Register all apps in Home Manager Apps with Launch Services
+              appDir="$HOME/Applications/Home Manager Apps"
+              if [ -d "$appDir" ]; then
+                for app in "$appDir"/*.app; do
+                  if [ -d "$app" ]; then
+                    $DRY_RUN_CMD /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app"
+                  fi
+                done
+                echo "Registered Nix apps with Launch Services"
+              fi
+            '';
 
             # Environment variables for this user
             home.sessionVariables = {
@@ -408,7 +427,10 @@
               zsh-completions  # Additional zsh completions
               codex        # Haskell documentation tool
 
-              # Batch 6 - Desktop applications
+              # Batch 6 - AI/Development CLI tools
+              claude-code  # Claude Code CLI (replaces npm global install)
+
+              # Batch 7 - Desktop applications
               iina         # Modern media player for macOS (mpv-based)
             ];
           };

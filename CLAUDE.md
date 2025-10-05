@@ -107,3 +107,4 @@ After any changes, run `darwin-rebuild switch --flake .#MacBook-Air-Piotr` to ap
 
 ## Backup
 `flake.nix.bak` contains a previous configuration version. Keep it as a reference but don't modify it directly.
+- Apply command with sudo -A darwin-rebuild switch --flake .#MacBook-Air-Piotr when executed from claude code to allow user enter password
