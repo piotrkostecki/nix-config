@@ -1,0 +1,117 @@
+\documentclass[10pt, a4paper]{article}
+
+% PACKAGES for layout and formatting
+\usepackage[margin=0.5in]{geometry}
+\usepackage{tabularx}
+\usepackage{parskip}
+\usepackage{fontenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+
+% DEFINE custom commands for keys to ensure consistency
+\newcommand{\key}[1]{\texttt{#1}}
+
+% DOCUMENT START
+\begin{document}
+
+% --- TITLE ---
+\begin{center}
+    {\huge \bfseries Vim Tricks Cheat Sheet \par}
+    \vspace{0.2cm}
+    \hrule
+\end{center}
+
+% --- CORE PHILOSOPHY ---
+\section*{Core Philosophy}
+\noindent\textbf{The Dot \key{.}} Command: The single most important command. Press \key{.} in Normal mode to repeat the last change you made (e.g., a \key{ciw}, a \key{dd}, or an \key{x}).
+
+\noindent\textbf{Vim Grammar}: Combine operators with motions/text objects. \texttt{[operator][number][motion/object]}.
+\begin{itemize}
+    \item \textbf{Operators}: \key{d} (delete), \key{c} (change), \key{y} (yank), \key{>} (indent).
+    \item \textbf{Example}: \key{d2w} means "delete 2 words". \key{cib} means "change inside parentheses".
+\end{itemize}
+
+% --- MOVEMENT ---
+\section*{Movement}
+\begin{tabularx}{\textwidth}{lX}
+    \hline
+    \textbf{Key} & \textbf{Action} \\
+    \hline
+    \key{w} / \key{b} / \key{e} & Move forward/backward by \textbf{w}ord / to \textbf{e}nd of word. \\
+    \key{\{} / \key{\}} & Move by paragraph. \\
+    \key{gg} / \key{G} & Go to the \textbf{first} / \textbf{last} line of the file. \\
+    \key{H} / \key{M} / \key{L} & Go to \textbf{H}igh / \textbf{M}iddle / \textbf{L}ow of the screen. \\
+    \key{\%} & Jump to matching bracket \key{()}, \key{\{\}, \key{[]}. \\
+    \key{*} / \key{\#} & Search forward/backward for the word under the cursor. \\
+    \key{<C-o>} / \key{<C-i>} & Go \textbf{o}ut to older / \textbf{i}n to newer location in jump list. \\
+    \hline
+\end{tabularx}
+
+% --- EDITING ---
+\section*{Editing}
+\begin{tabularx}{\textwidth}{lX}
+    \hline
+    \textbf{Command} & \textbf{Action} \\
+    \hline
+    \key{ciw} & \textbf{C}hange \textbf{i}nside \textbf{w}ord. \\
+    \key{caw} & \textbf{C}hange \textbf{a} \textbf{w}ord (including space). \\
+    \key{C} & Change from cursor to the end of the line. \\
+    \key{r} & \textbf{R}eplace single character under cursor. \\
+    \key{\textasciitilde} & Flip the case of the character under the cursor. \\
+    \key{u} / \key{<C-r>} & \textbf{U}ndo / \textbf{R}edo. \\
+    \key{>>} / \key{<<} & Indent / Un-indent current line. \\
+    \key{J} & \textbf{J}oin the line below to the current one. \\
+    \hline
+\end{tabularx}
+
+% --- TEXT OBJECTS ---
+\section*{Text Objects (The "Grammar")}
+Combine an operator (\key{d}, \key{c}, \key{y}) with an object.
+\begin{tabularx}{\textwidth}{lXl}
+    \hline
+    \textbf{Object} & \textbf{Meaning} & \textbf{Example} \\
+    \hline
+    \key{iw} / \key{aw} & \textbf{i}nside / \textbf{a}round \textbf{w}ord. & \key{diw} (delete word under cursor) \\
+    \key{i"} / \key{a"} & \textbf{i}nside / \textbf{a}round \key{"} quotes. & \key{ci"} (change inside quotes) \\
+    \key{i(} / \key{a(} & \textbf{i}nside / \textbf{a}round \key{()} block. & \key{ya(} (yank the whole \key{(block)}) \\
+    \key{ip} / \key{ap} & \textbf{i}nside / \textbf{a}round \textbf{p}aragraph. & \key{dap} (delete a whole paragraph) \\
+    \hline
+\end{tabularx}
+
+% --- SEARCH & REPLACE ---
+\section*{Search & Replace}
+\begin{tabularx}{\textwidth}{lX}
+    \hline
+    \textbf{Command} & \textbf{Action} \\
+    \hline
+    \key{:%s/old/new/g} & \textbf{S}ubstitute all `old` with `new` in the entire file. \\
+    \key{:%s/old/new/gc} & Substitute with \textbf{c}onfirmation for each match. \\
+    \key{:g/pattern/d} & \textbf{G}lobally find all lines with `pattern` and \textbf{d}elete them. \\
+    \hline
+\end{tabularx}
+
+% --- WINDOW MANAGEMENT ---
+\section*{Window Management}
+\begin{tabularx}{\textwidth}{lX}
+    \hline
+    \textbf{Command} & \textbf{Action} \\
+    \hline
+    \key{:sp} / \key{:vsp} & \textbf{Sp}lit window horizontally / \textbf{v}ertically. \\
+    \key{<C-w> w} & Cycle between open windows. \\
+    \key{<C-w> h/j/k/l} & Move to the window left/down/up/right. \\
+    \key{<C-w> =} & Make all windows equal size. \\
+    \key{<C-w> c} & \textbf{C}lose the current window. \\
+    \hline
+\end{tabularx}
+
+% --- MACROS (AUTOMATION) ---
+\section*{Macros (Automation)}
+\begin{enumerate}
+    \item \key{qa} - Start recording a macro into register \key{a}.
+    \item \texttt{...} - Perform your sequence of commands.
+    \item \key{q} - Stop recording.
+    \item \key{@a} - Execute the macro from register \key{a}.
+    \item \key{@@} - Repeat the last executed macro.
+\end{enumerate}
+
+\end{document}

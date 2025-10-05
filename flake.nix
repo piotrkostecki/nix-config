@@ -27,7 +27,10 @@
     system = "aarch64-darwin";  # M1/M2/M3 Apple Silicon
 
     # Convenience handle for packages coming from nixpkgs.
-    pkgs   = import nixpkgs { inherit system; };
+    pkgs   = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;  # Allow unfree packages like Spotify, VSCode, etc.
+    };
   in {
     # Main system configuration for this machine
     darwinConfigurations."MacBook-Air-Piotr" = darwin.lib.darwinSystem {
@@ -66,6 +69,9 @@
 
             # Disable version checking between nixpkgs and home-manager
             home.enableNixpkgsReleaseCheck = false;
+
+            # Allow unfree packages (Spotify, VSCode, etc.)
+            nixpkgs.config.allowUnfree = true;
 
             # Environment variables for this user
             home.sessionVariables = {
@@ -347,6 +353,9 @@
               git-filter-repo  # Git history rewriting tool
               zsh-completions  # Additional zsh completions
               codex        # Haskell documentation tool
+
+              # Batch 6 - Desktop applications
+              spotify      # Music streaming client
             ];
           };
         }
