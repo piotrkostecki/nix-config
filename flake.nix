@@ -43,6 +43,10 @@
           # Core nix-darwin configuration for the host.
           # Don't change this unless you know what you're doing
           system.stateVersion = 6;
+
+          # Primary user for Homebrew and other user-specific operations
+          system.primaryUser = "piotrkostecki";
+
           # Disable nix-darwin's Nix management (required for Determinate Nix)
           nix.enable = false;
 
@@ -55,6 +59,56 @@
 
           # Define the main user's home directory
           users.users.piotrkostecki.home = "/Users/piotrkostecki";
+
+          # === Homebrew Configuration ===
+          # Declarative management of GUI applications via Homebrew Cask
+          homebrew = {
+            enable = true;
+
+            # GUI Applications managed by Homebrew Cask
+            casks = [
+              # Media & Entertainment
+              "spotify"              # Music streaming
+              "vlc"                  # Media player (alternative to IINA)
+
+              # Development & Tools
+              "visual-studio-code"   # Code editor
+              "iterm2"               # Terminal emulator
+              "docker"               # Container platform
+
+              # Productivity
+              "obsidian"             # Note-taking
+              "drawio"               # Diagram editor
+              "freeplane"            # Mind mapping
+
+              # Communication
+              "signal"               # Encrypted messaging
+
+              # Utilities
+              "google-chrome"        # Web browser
+              "google-drive"         # Cloud storage
+              "openvpn-connect"      # VPN client
+              "rar"                  # Archive utility
+              "balenaetcher"         # USB flasher
+              "raspberry-pi-imager"  # Raspberry Pi image writer
+
+              # Gaming
+              "steam"                # Game platform
+              "epic-games"           # Epic Games launcher
+
+              # Security
+              "keeweb"               # Password manager
+
+              # 3D Printing
+              "ultimaker-cura"       # 3D printing slicer
+            ];
+
+            # Homebrew maintenance settings
+            onActivation = {
+              autoUpdate = true;      # Auto-update Homebrew itself
+              cleanup = "zap";        # Remove all unlisted casks/formulas
+            };
+          };
 
           # === Home Manager Configuration ===
           # Manages user-level packages, dotfiles, and program configurations
@@ -355,7 +409,7 @@
               codex        # Haskell documentation tool
 
               # Batch 6 - Desktop applications
-              spotify      # Music streaming client
+              iina         # Modern media player for macOS (mpv-based)
             ];
           };
         }
