@@ -1,0 +1,136 @@
+# Zsh shell configuration
+# Cross-platform shell setup with oh-my-zsh, powerlevel10k, and plugins
+
+{ pkgs, lib, ... }:
+
+{
+  programs.zsh = {
+    enable = true;
+
+    # === Oh-My-Zsh Framework ===
+    oh-my-zsh = {
+      enable = true;
+      plugins = [
+        "git"                  # Git aliases and functions
+        "pip"                  # Python pip completion
+        "command-not-found"    # Suggests package for missing commands
+        "vagrant"              # Vagrant completion
+        "mvn"                  # Maven completion
+        "docker"               # Docker completion and aliases
+        "docker-compose"       # Docker Compose completion
+        "tmux"                 # Tmux aliases and functions
+        "autojump"             # Quick directory jumping
+        "vi-mode"              # Vi keybindings for command line
+      ];
+    };
+
+    # === Zsh Plugins ===
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+      {
+        name = "zsh-syntax-highlighting";
+        src = pkgs.zsh-syntax-highlighting;
+        file = "share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
+      }
+      {
+        name = "zsh-autosuggestions";
+        src = pkgs.zsh-autosuggestions;
+        file = "share/zsh-autosuggestions/zsh-autosuggestions.zsh";
+      }
+    ];
+
+    # === Shell Aliases ===
+    shellAliases = {
+      # Editor
+      vim = "nvim";
+      vi = "nvim";
+
+      # List files (using eza from core.nix)
+      ls = "eza --icons";
+      ll = "eza --icons -l";
+      la = "eza --icons -la";
+      lt = "eza --icons --tree";
+
+      # Colorize common commands
+      grep = "grep --color=auto";
+
+      # Tmux
+      ta = "tmux attach -t";
+      ts = "tmux new-session -s";
+      tl = "tmux list-sessions";
+
+      # Git (additional to oh-my-zsh git plugin)
+      gst = "git status";
+      gco = "git checkout";
+      gcm = "git commit -m";
+
+      # Kubernetes (from devops.nix)
+      k = "kubectl";
+      kgp = "kubectl get pods";
+      kgs = "kubectl get services";
+      kgd = "kubectl get deployments";
+      kgn = "kubectl get namespaces";
+      kdp = "kubectl describe pod";
+      kl = "kubectl logs";
+      kx = "kubectl exec -it";
+    };
+
+    # === Zsh Initialization ===
+    initExtra = lib.mkMerge [
+      # Powerlevel10k instant prompt - MUST run before oh-my-zsh
+      (lib.mkBefore ''
+        # Enable Powerlevel10k instant prompt
+        if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+          source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+        fi
+      '')
+
+      # Main configuration that runs AFTER oh-my-zsh
+      ''
+        # Source Powerlevel10k configuration
+        [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+        # FZF configuration
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+        # Syntax highlighting customization
+        ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+
+        # Autosuggestions configuration
+        ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+        ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+        # Source local customizations if they exist
+        [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+      ''
+
+      # === Platform-Specific Configuration ===
+
+      # macOS-specific
+      (lib.mkIf pkgs.stdenv.isDarwin ''
+        # Homebrew environment
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+
+        # LM Studio CLI path
+        export PATH="$PATH:/Users/piotrkostecki/.lmstudio/bin"
+      '')
+
+      # Linux-specific
+      (lib.mkIf pkgs.stdenv.isLinux ''
+        # Add Linux-specific configuration here
+        # Example: export PATH="$PATH:/home/piotrkostecki/bin"
+      '')
+    ];
+  };
+
+  # === Environment Variables ===
+  home.sessionVariables = {
+    # Custom askpass script for sudo operations (macOS)
+    SUDO_ASKPASS = lib.mkIf pkgs.stdenv.isDarwin "/usr/local/bin/askpass.sh";
+  };
+}
