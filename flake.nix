@@ -60,6 +60,13 @@
           # Define the main user's home directory
           users.users.piotrkostecki.home = "/Users/piotrkostecki";
 
+          # === System-level Packages ===
+          # GUI applications installed at the system level (accessible to all users)
+          environment.systemPackages = with pkgs; [
+            iina      # Modern media player for macOS (mpv-based)
+            waveterm  # Open-source, cross-platform terminal for seamless workflows
+          ];
+
           # === Homebrew Configuration ===
           # Declarative management of GUI applications via Homebrew Cask
           homebrew = {
@@ -73,8 +80,9 @@
 
               # Development & Tools
               "visual-studio-code"   # Code editor
+              "cursor"               # AI-powered code editor
               "iterm2"               # Terminal emulator
-              "docker"               # Container platform
+              "docker-desktop"       # Docker Desktop for macOS
 
               # Productivity
               "obsidian"             # Note-taking
@@ -84,8 +92,12 @@
               # Communication
               "signal"               # Encrypted messaging
 
+              # AI Tools
+              "claude"               # Anthropic Claude desktop app
+
               # Utilities
               "google-chrome"        # Web browser
+              "zen-browser"          # Privacy-focused Firefox-based browser
               "google-drive"         # Cloud storage
               "openvpn-connect"      # VPN client
               "rar"                  # Archive utility
@@ -429,9 +441,6 @@
 
               # Batch 6 - AI/Development CLI tools
               claude-code  # Claude Code CLI (replaces npm global install)
-
-              # Batch 7 - Desktop applications
-              iina         # Modern media player for macOS (mpv-based)
             ];
           };
         }
