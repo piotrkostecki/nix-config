@@ -1,5 +1,5 @@
 # Tmux configuration - terminal multiplexer
-# Cross-platform tmux setup with screen-style keybindings and catppuccin theme
+# Cross-platform tmux setup with standard keybindings (Ctrl-b) and catppuccin theme
 
 { pkgs, ... }:
 
@@ -8,7 +8,7 @@
     enable = true;
 
     # === Basic Settings ===
-    prefix = "C-a";              # Use Ctrl-a instead of Ctrl-b (screen-style)
+    prefix = "C-b";              # Default tmux prefix (Ctrl-b)
     mouse = true;                # Enable mouse support
     terminal = "screen-256color"; # Use 256 color terminal
     baseIndex = 1;               # Start window numbering at 1
@@ -56,42 +56,84 @@
       # Start zsh as a login shell to properly load PATH
       set-option -g default-command "${pkgs.zsh}/bin/zsh -l"
 
-      # === Screen-style Keybindings ===
+      # === Standard Tmux Keybindings ===
+      # Using default Ctrl-b prefix with some enhancements
 
-      # Send prefix to nested tmux/screen (press Ctrl-a twice)
-      bind C-a send-prefix
+      # Better window splitting (keep opening in current path)
+      bind % split-window -h -c "#{pane_current_path}"  # Vertical split (default)
+      bind '"' split-window -v -c "#{pane_current_path}"  # Horizontal split (default)
 
-      # Screen-style window splitting
-      bind | split-window -h -c "#{pane_current_path}"  # Vertical split
-      bind - split-window -v -c "#{pane_current_path}"  # Horizontal split
+      # Alternative intuitive split bindings
+      bind | split-window -h -c "#{pane_current_path}"  # Vertical split (|)
+      bind - split-window -v -c "#{pane_current_path}"  # Horizontal split (-)
 
-      # Screen-style window creation
+      # New window in current path
       bind c new-window -c "#{pane_current_path}"
 
-      # Screen-style last window (Ctrl-a Ctrl-a)
-      bind C-a last-window
-
-      # Screen-style window navigation
-      bind Space next-window
-      bind BSpace previous-window
-
-      # Screen-style detach
-      bind d detach-client
-
-      # Screen-style kill window
-      bind k confirm-before -p "kill-window #W? (y/n)" kill-window
-
-      # Pane navigation (vim-style)
+      # Vim-style pane navigation (bonus, doesn't conflict with defaults)
       bind h select-pane -L
       bind j select-pane -D
       bind k select-pane -U
       bind l select-pane -R
 
-      # Pane resizing
+      # Vim-style pane resizing
       bind -r H resize-pane -L 5
       bind -r J resize-pane -D 5
       bind -r K resize-pane -U 5
       bind -r L resize-pane -R 5
+
+      # Show keybinding cheatsheet
+      bind ? display-message -d 0 '
+      ╔════════════════════════════════════════════════╗
+      ║         TMUX KEYBINDING CHEATSHEET             ║
+      ╠════════════════════════════════════════════════╣
+      ║ PREFIX: Ctrl-b (then press key below)         ║
+      ╠════════════════════════════════════════════════╣
+      ║ WINDOWS                                        ║
+      ║  c      → Create new window                    ║
+      ║  ,      → Rename window                        ║
+      ║  &      → Kill window                          ║
+      ║  n      → Next window                          ║
+      ║  p      → Previous window                      ║
+      ║  0-9    → Select window by number              ║
+      ║  l      → Toggle last window                   ║
+      ║  w      → List windows                         ║
+      ╠════════════════════════════════════════════════╣
+      ║ PANES                                          ║
+      ║  %  or  | → Split vertically                   ║
+      ║  "  or  - → Split horizontally                 ║
+      ║  x        → Kill pane                          ║
+      ║  o        → Cycle through panes                ║
+      ║  ;        → Toggle last pane                   ║
+      ║  q        → Show pane numbers                  ║
+      ║  z        → Toggle pane zoom                   ║
+      ║  {        → Move pane left                     ║
+      ║  }        → Move pane right                    ║
+      ║  Space    → Cycle pane layouts                 ║
+      ╠════════════════════════════════════════════════╣
+      ║ VIM-STYLE PANE NAVIGATION                      ║
+      ║  h        → Select pane left                   ║
+      ║  j        → Select pane down                   ║
+      ║  k        → Select pane up                     ║
+      ║  l        → Select pane right                  ║
+      ║  H/J/K/L  → Resize pane (repeatable)           ║
+      ╠════════════════════════════════════════════════╣
+      ║ SESSIONS                                       ║
+      ║  d        → Detach from session                ║
+      ║  s        → List sessions                      ║
+      ║  $        → Rename session                     ║
+      ║  (        → Previous session                   ║
+      ║  )        → Next session                       ║
+      ╠════════════════════════════════════════════════╣
+      ║ MISC                                           ║
+      ║  ?        → Show this cheatsheet               ║
+      ║  :        → Command prompt                     ║
+      ║  t        → Show clock                         ║
+      ║  r        → Reload config                      ║
+      ║  [        → Enter copy mode (vi keys)          ║
+      ╚════════════════════════════════════════════════╝
+      Press ENTER or ESC to dismiss
+      '
 
       # Reload config
       bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"

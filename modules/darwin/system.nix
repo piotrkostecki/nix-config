@@ -28,6 +28,13 @@
     trusted-users = [ "root" "piotrkostecki" ];
   };
 
+  # === Keyboard Configuration ===
+  # Remap Caps Lock to Control globally on macOS
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToControl = true;
+  };
+
   # === System Packages ===
   # GUI applications installed at the system level (accessible to all users)
   environment.systemPackages = with pkgs; [

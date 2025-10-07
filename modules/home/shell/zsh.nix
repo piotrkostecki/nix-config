@@ -105,6 +105,30 @@
         ZSH_AUTOSUGGEST_STRATEGY=(history completion)
         ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
+        # === Tmux Welcome Message ===
+        # Display tmux keybinding hint when starting a shell inside tmux
+        if [[ -n "$TMUX" ]]; then
+          # Only show on new shells, not on every prompt
+          if [[ -z "$TMUX_WELCOME_SHOWN" ]]; then
+            export TMUX_WELCOME_SHOWN=1
+            echo ""
+            echo "╔════════════════════════════════════════════════╗"
+            echo "║ 🚀 TMUX SESSION ACTIVE                         ║"
+            echo "╠════════════════════════════════════════════════╣"
+            echo "║ Prefix: Ctrl-b                                 ║"
+            echo "║                                                 ║"
+            echo "║ Quick Commands:                                 ║"
+            echo "║   Ctrl-b ?  → Show full keybinding cheatsheet  ║"
+            echo "║   Ctrl-b c  → Create new window                ║"
+            echo "║   Ctrl-b |  → Split vertically                 ║"
+            echo "║   Ctrl-b -  → Split horizontally               ║"
+            echo "║   Ctrl-b d  → Detach from session              ║"
+            echo "║   Ctrl-b h/j/k/l → Navigate panes (vim-style)  ║"
+            echo "╚════════════════════════════════════════════════╝"
+            echo ""
+          fi
+        fi
+
         # Source local customizations if they exist
         [ -f ~/.zshrc.local ] && source ~/.zshrc.local
       ''
