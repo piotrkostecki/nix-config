@@ -7,6 +7,11 @@
   homebrew = {
     enable = true;
 
+    # === Command-line Tools (Brews) ===
+    brews = [
+      "zsh"  # Z shell - newer version from Homebrew
+    ];
+
     # === GUI Applications (Casks) ===
     casks = [
       # === Media & Entertainment ===

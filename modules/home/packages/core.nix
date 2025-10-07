@@ -31,12 +31,4 @@
     enable = true;                 # Smarter 'cd' that learns your habits
     enableZshIntegration = true;   # Integrate with zsh (use 'z' command)
   };
-
-  # === Configure eza (better ls) ===
-  programs.zsh.shellAliases = {
-    ls = "eza --icons";
-    ll = "eza --icons -l";
-    la = "eza --icons -la";
-    lt = "eza --icons --tree";
-  };
 }

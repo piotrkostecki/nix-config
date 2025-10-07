@@ -7,6 +7,12 @@
   programs.zsh = {
     enable = true;
 
+    # === Environment Variables ===
+    envExtra = ''
+      # Set ZSH path for oh-my-zsh (must be before oh-my-zsh init)
+      export ZSH="${pkgs.oh-my-zsh}/share/oh-my-zsh"
+    '';
+
     # === Oh-My-Zsh Framework ===
     oh-my-zsh = {
       enable = true;
@@ -131,6 +137,12 @@
 
         # Source local customizations if they exist
         [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+        # Override oh-my-zsh aliases with eza (must be after all oh-my-zsh loading)
+        alias ls='eza --icons'
+        alias ll='eza --icons -l'
+        alias la='eza --icons -la'
+        alias lt='eza --icons --tree'
       ''
 
       # === Platform-Specific Configuration ===
