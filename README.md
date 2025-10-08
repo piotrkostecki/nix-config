@@ -5,6 +5,7 @@ A declarative macOS system configuration using Nix flakes, nix-darwin, and home-
 ## 📚 Documentation
 
 - **[CLAUDE.md](./CLAUDE.md)** - Detailed configuration guide and architecture documentation
+- **[WSL-QUICKSTART.md](./WSL-QUICKSTART.md)** - Standalone WSL/Linux setup guide with `home.nix`
 - **[Quick Reference](#quick-reference)** - Common commands and operations
 
 ## 🚀 Quickstart
@@ -55,55 +56,58 @@ A declarative macOS system configuration using Nix flakes, nix-darwin, and home-
 
 ### Linux/WSL Setup
 
-#### Prerequisites
-- WSL2 (Windows Subsystem for Linux) or Linux distribution
-- `curl` and `git` installed
+**For a complete step-by-step guide with troubleshooting, see [WSL-QUICKSTART.md](./WSL-QUICKSTART.md)**
 
-#### Installation Steps
+#### Quick Installation (Standalone)
+
+Use the standalone `home.nix` configuration for instant setup:
 
 1. **Install Nix**
    ```bash
    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
    ```
 
-   *For WSL, you may need to enable systemd in `/etc/wsl.conf`:*
-   ```ini
-   [boot]
-   systemd=true
-   ```
-
-2. **Enable Nix flakes** (if using official installer)
+2. **Copy the configuration**
    ```bash
-   mkdir -p ~/.config/nix
-   echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+   mkdir -p ~/.config/home-manager
+   curl -o ~/.config/home-manager/home.nix https://raw.githubusercontent.com/piotrkostecki/nix-config/master/home.nix
    ```
 
-3. **Install home-manager**
+3. **Edit and customize**
+   ```bash
+   nano ~/.config/home-manager/home.nix
+   # Change username, homeDirectory, and git info
+   ```
+
+4. **Install and apply**
    ```bash
    nix run home-manager/master -- init --switch
    ```
 
-4. **Clone and customize this repository**
+#### Advanced Installation (Flake)
+
+For multi-host management with the modular configuration:
+
+1. **Follow steps 1-2 from Quick Installation above**
+
+2. **Clone this repository**
    ```bash
-   git clone <your-repo-url> ~/.config/home-manager
-   cd ~/.config/home-manager
+   git clone <your-repo-url> ~/.config/nix-darwin
+   cd ~/.config/nix-darwin
    ```
 
-5. **Create a Linux-specific configuration**
-
-   Extract the home-manager section from `flake.nix` and adapt it:
+3. **Edit WSL host configuration**
    ```bash
-   # Edit flake.nix to create a homeConfigurations output
-   # Remove macOS-specific packages (darwin-only tools)
-   # Adjust system to "x86_64-linux" or "aarch64-linux"
+   nano hosts/wsl-ubuntu/default.nix
+   # Customize username, homeDirectory, and settings
    ```
 
-6. **Apply configuration**
+4. **Apply with flake**
    ```bash
-   home-manager switch --flake .#yourusername
+   home-manager switch --flake .#piotrkostecki@wsl-ubuntu
    ```
 
-7. **Restart your shell**
+5. **Restart your shell**
    ```bash
    exec zsh
    ```
