@@ -7,14 +7,18 @@
   home.packages = with pkgs; [
     # === Container Management ===
     docker           # Container platform CLI
+    docker-compose   # Define and run multi-container Docker applications
     lazydocker       # Terminal UI for managing Docker containers and images
+    dive             # Tool for exploring Docker image layers
+    ctop             # Top-like interface for container metrics
 
     # === Kubernetes ===
     kubectl          # Kubernetes command-line tool
     k9s              # Kubernetes TUI for cluster management
+    openshift        # OpenShift client (oc) - Red Hat's Kubernetes distribution
 
     # === Infrastructure as Code ===
-    terraform        # Provision and manage cloud infrastructure
+    # terraform      # Provision and manage cloud infrastructure (DISABLED)
     ansible          # Configuration management and automation platform
 
     # === Cloud Provider CLIs ===
@@ -31,8 +35,9 @@
     helm             # Kubernetes package manager (not available on macOS yet)
   ];
 
-  # === Kubernetes Aliases ===
+  # === Kubernetes & OpenShift Aliases ===
   programs.zsh.shellAliases = {
+    # Kubernetes
     k = "kubectl";
     kgp = "kubectl get pods";
     kgs = "kubectl get services";
@@ -41,5 +46,17 @@
     kdp = "kubectl describe pod";
     kl = "kubectl logs";
     kx = "kubectl exec -it";
+
+    # OpenShift
+    ocl = "oc login";
+    ocp = "oc get pods";
+    ocproject = "oc project";
+    oclogs = "oc logs";
+
+    # Docker debugging
+    dps = "docker ps";
+    dimg = "docker images";
+    dlogs = "docker logs";
+    dexec = "docker exec -it";
   };
 }
