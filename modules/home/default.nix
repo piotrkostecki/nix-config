@@ -20,6 +20,9 @@
 
   # === Additional Programs ===
 
+  # Let Home Manager manage itself (provides the home-manager command)
+  programs.home-manager.enable = true;
+
   # direnv - automatically load/unload environments
   programs.direnv = {
     enable = true;

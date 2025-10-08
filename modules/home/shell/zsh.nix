@@ -86,7 +86,7 @@
     };
 
     # === Zsh Initialization ===
-    initExtra = lib.mkMerge [
+    initContent = lib.mkMerge [
       # Powerlevel10k instant prompt - MUST run before oh-my-zsh
       (lib.mkBefore ''
         # Enable Powerlevel10k instant prompt
