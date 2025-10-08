@@ -165,8 +165,8 @@
   };
 
   # === Environment Variables ===
-  home.sessionVariables = {
-    # Custom askpass script for sudo operations (macOS)
-    SUDO_ASKPASS = lib.mkIf pkgs.stdenv.isDarwin "/usr/local/bin/askpass.sh";
+  home.sessionVariables = lib.optionalAttrs pkgs.stdenv.isDarwin {
+    # Custom askpass script for sudo operations (macOS only)
+    SUDO_ASKPASS = "/usr/local/bin/askpass.sh";
   };
 }
