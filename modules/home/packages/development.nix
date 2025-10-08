@@ -40,6 +40,10 @@
   programs.git = {
     enable = true;
 
+    # User identity - IMPORTANT: Update these values!
+    userName = "Piotr Kostecki";
+    userEmail = "your.email@example.com";  # Change this to your email
+
     extraConfig = {
       # Use delta as the pager for better diffs
       core.pager = "delta";

@@ -243,6 +243,11 @@ git clone https://github.com/piotrkostecki/nix-config.git ~/.config/nix-darwin
 
 # Edit the WSL host configuration
 nano ~/.config/nix-darwin/hosts/wsl-ubuntu/default.nix
+# Update: home.username, home.homeDirectory
+
+# IMPORTANT: Update git user configuration
+nano ~/.config/nix-darwin/modules/home/packages/development.nix
+# Update: programs.git.userName and programs.git.userEmail
 
 # Apply with flake
 home-manager switch --flake ~/.config/nix-darwin#piotrkostecki@wsl-ubuntu
