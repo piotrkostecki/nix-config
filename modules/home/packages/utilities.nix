@@ -6,6 +6,7 @@
 {
   home.packages = with pkgs; [
     # === Navigation & Search ===
+    silver-searcher # ag - Fast code searching tool
     autojump         # Jump to frequently used directories (j command)
     # Note: zoxide is configured in core.nix as an alternative
 

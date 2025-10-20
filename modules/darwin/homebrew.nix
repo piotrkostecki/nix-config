@@ -40,11 +40,14 @@
       "zen-browser"          # Privacy-focused Firefox-based browser
       "google-drive"         # Cloud storage client
       "openvpn-connect"      # OpenVPN client for macOS
+      "tailscale-app"
       "rar"                  # Archive utility for RAR files
       "balenaetcher"         # USB drive flasher
       "raspberry-pi-imager"  # Raspberry Pi SD card imager
+      "qbittorrent"
 
       # === Gaming ===
+      "gog-galaxy"           # GOG Galaxy game launcher
       "steam"                # Game distribution platform
       "epic-games"           # Epic Games launcher
 
